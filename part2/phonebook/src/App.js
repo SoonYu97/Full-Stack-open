@@ -6,6 +6,7 @@ const App = () => {
   ]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
+  const [filter, setFilter] = useState("");
 
   const handleNameInputChange = (e) => {
     setNewName(e.target.value);
@@ -13,6 +14,10 @@ const App = () => {
 
   const handleNumberInputChange = (e) => {
     setNewNumber(e.target.value);
+  };
+
+  const handleFilterInputChange = (e) => {
+    setFilter(e.target.value);
   };
 
   const addName = (e) => {
@@ -28,6 +33,11 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <div>
+        <span>filter shown with </span>
+        <input value={filter} onChange={handleFilterInputChange} />
+      </div>
+      <h2>add a new</h2>
       <form>
         <div>
           name: <input value={newName} onChange={handleNameInputChange} />
@@ -43,12 +53,17 @@ const App = () => {
       </form>
       <h2>Numbers</h2>
       <table>
-        {persons.map(({ name, number }) => (
-          <tr key={name}>
-            <td>{name}</td>
-            <td>{number}</td>
-          </tr>
-        ))}
+        {persons
+          .filter((person) => person.name.includes(filter)).length === 0 ?
+          "Nothing to show"
+          :
+          persons
+          .filter((person) => person.name.includes(filter)).map(({ name, number }) => (
+            <tr key={name}>
+              <td>{name}</td>
+              <td>{number}</td>
+            </tr>
+          ))}
       </table>
     </div>
   );
