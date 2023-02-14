@@ -1,4 +1,7 @@
 import { useState } from "react";
+import Book from "./components/Book";
+import Filter from "./components/Filter";
+import Form from "./components/Form";
 
 const App = () => {
   const [persons, setPersons] = useState([
@@ -30,41 +33,30 @@ const App = () => {
       alert(`${newName} is already added to phonebook`);
     }
   };
+
+  const filterProps = {
+    filter,
+    handleFilterInputChange,
+  };
+
+  const formProps = {
+    newName,
+    newNumber,
+    handleNameInputChange,
+    handleNumberInputChange,
+    addName,
+  };
+
+  const bookProps = {
+    persons,
+    filter,
+  };
+
   return (
     <div>
-      <h2>Phonebook</h2>
-      <div>
-        <span>filter shown with </span>
-        <input value={filter} onChange={handleFilterInputChange} />
-      </div>
-      <h2>add a new</h2>
-      <form>
-        <div>
-          name: <input value={newName} onChange={handleNameInputChange} />
-        </div>
-        <div>
-          number: <input value={newNumber} onChange={handleNumberInputChange} />
-        </div>
-        <div>
-          <button type="submit" onClick={addName}>
-            add
-          </button>
-        </div>
-      </form>
-      <h2>Numbers</h2>
-      <table>
-        {persons
-          .filter((person) => person.name.includes(filter)).length === 0 ?
-          "Nothing to show"
-          :
-          persons
-          .filter((person) => person.name.includes(filter)).map(({ name, number }) => (
-            <tr key={name}>
-              <td>{name}</td>
-              <td>{number}</td>
-            </tr>
-          ))}
-      </table>
+      <Filter {...filterProps} />
+      <Form {...formProps} />
+      <Book {...bookProps} />
     </div>
   );
 };
