@@ -3,9 +3,10 @@ import { useState } from "react";
 const StatisticLine = (props) => {
   const { text, value } = props;
   return (
-    <p>
-      {text} {value}
-    </p>
+    <tr>
+      <td>{text}</td>
+      <td>{value}</td>
+    </tr>
   );
 };
 
@@ -17,14 +18,14 @@ const Statistics = (props) => {
       {sum === 0 ? (
         <p>No feedback given</p>
       ) : (
-        <>
+        <table>
           <StatisticLine text="good" value={good} />
           <StatisticLine text="neutral" value={neutral} />
           <StatisticLine text="bad" value={bad} />
           <StatisticLine text="all" value={sum} />
           <StatisticLine text="average" value={average} />
           <StatisticLine text="positive" value={positive} />
-        </>
+        </table>
       )}
     </div>
   );
@@ -40,9 +41,11 @@ const App = () => {
   const IncreaseNeutral = () => setNeutral(neutral + 1);
   const IncreaseBad = () => setBad(bad + 1);
 
+  const Round = (num) => (Math.round(num * 100) / 100).toFixed(2);
+
   const sum = good + bad + neutral;
-  const average = (good - bad) / sum;
-  const positive = (good / sum) * 100;
+  const average = Round((good - bad) / sum);
+  const positive = Round((good / sum) * 100) + ' %';
 
   return (
     <>
