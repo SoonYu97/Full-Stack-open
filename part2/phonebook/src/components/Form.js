@@ -3,7 +3,7 @@ const Form = ({
   newNumber,
   handleNameInputChange,
   handleNumberInputChange,
-  addName,
+  addPerson,
 }) => {
   return (
     <>
@@ -16,7 +16,7 @@ const Form = ({
           number: <input value={newNumber} onChange={handleNumberInputChange} />
         </div>
         <div>
-          <button type="submit" onClick={addName}>
+          <button type="submit" onClick={addPerson}>
             add
           </button>
         </div>
