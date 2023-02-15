@@ -43,6 +43,17 @@ const App = () => {
     }
   };
 
+  const deletePerson = (id) => {
+    console.log(id);
+    personServices
+      .remove(id)
+      .then(() => setPersons(persons.filter((person) => person.id !== id)))
+      .catch((error) => {
+        alert(`unable to remove `);
+        setPersons(persons.filter((person) => person.id !== id));
+      });
+  };
+
   const filterProps = {
     filter,
     handleFilterInputChange,
@@ -59,6 +70,7 @@ const App = () => {
   const bookProps = {
     persons,
     filter,
+    deletePerson,
   };
 
   return (
