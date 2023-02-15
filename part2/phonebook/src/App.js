@@ -13,7 +13,6 @@ const App = () => {
   useEffect(() => {
     axios.get("http://localhost:3001/persons").then((response) => {
       setPersons(response.data);
-      console.log(response.data);
     });
   }, []);
 
@@ -32,9 +31,15 @@ const App = () => {
   const addName = (e) => {
     e.preventDefault();
     if (!persons.find((e) => e.name === newName)) {
-      setPersons(persons.concat({ name: newName, number: newNumber }));
-      setNewName("");
-      setNewNumber("");
+      const newPerson = { name: newName, number: newNumber };
+      axios
+        .post("http://localhost:3001/persons", newPerson)
+        .then((response) => {
+          setPersons(persons.concat(response.data));
+          setNewName("");
+          setNewNumber("");
+          console.log(response.data);
+        });
     } else {
       alert(`${newName} is already added to phonebook`);
     }
