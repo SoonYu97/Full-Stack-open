@@ -9,6 +9,7 @@ const App = () => {
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [filter, setFilter] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   useEffect(() => {
     personServices.getAll().then((initialPersons) => {
@@ -28,6 +29,13 @@ const App = () => {
     setFilter(e.target.value);
   };
 
+  const setMessage = (message) => {
+    setSuccessMessage(message);
+    setTimeout(() => {
+      setSuccessMessage("");
+    }, 1000);
+  };
+
   const addPerson = (e) => {
     e.preventDefault();
     if (!persons.find((person) => person.name === newName)) {
@@ -37,6 +45,7 @@ const App = () => {
           setPersons(persons.concat(newPerson));
           setNewName("");
           setNewNumber("");
+          setMessage(`Added ${newPerson.name} successfully`);
         });
     } else {
       if (
@@ -56,6 +65,7 @@ const App = () => {
             );
             setNewName("");
             setNewNumber("");
+            setMessage(`Updated ${newPerson.name}'s number successfully`);
           });
       }
     }
@@ -68,6 +78,7 @@ const App = () => {
         .remove(id)
         .then(() => {
           setPersons(persons.filter((person) => person.id !== id));
+          setMessage(`Remove ${person.name} succesfully`);
         })
         .catch(() => {
           alert(`Unable to remove ${person.name}`);
@@ -78,6 +89,7 @@ const App = () => {
 
   const filterProps = {
     filter,
+    successMessage,
     handleFilterInputChange,
   };
 
