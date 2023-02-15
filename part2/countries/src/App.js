@@ -42,7 +42,7 @@ const App = () => {
 
   const showCountry = (name) => {
     setFilter(name);
-  }
+  };
 
   return (
     <div>
@@ -59,7 +59,7 @@ const App = () => {
         ) : (
           "No match, specify another filter"
         )}
-      </div>
+      </div> 
     </div>
   );
 };
