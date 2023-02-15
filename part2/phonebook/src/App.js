@@ -10,6 +10,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState("");
   const [filter, setFilter] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     personServices.getAll().then((initialPersons) => {
@@ -29,10 +30,17 @@ const App = () => {
     setFilter(e.target.value);
   };
 
-  const setMessage = (message) => {
+  const setSuccMessage = (message) => {
     setSuccessMessage(message);
     setTimeout(() => {
       setSuccessMessage("");
+    }, 1000);
+  };
+
+  const setErrMessage = (message) => {
+    setErrorMessage(message);
+    setTimeout(() => {
+      setErrorMessage("");
     }, 1000);
   };
 
@@ -45,7 +53,7 @@ const App = () => {
           setPersons(persons.concat(newPerson));
           setNewName("");
           setNewNumber("");
-          setMessage(`Added ${newPerson.name} successfully`);
+          setSuccMessage(`Added ${newPerson.name} successfully`);
         });
     } else {
       if (
@@ -65,7 +73,11 @@ const App = () => {
             );
             setNewName("");
             setNewNumber("");
-            setMessage(`Updated ${newPerson.name}'s number successfully`);
+            setSuccMessage(`Updated ${newPerson.name}'s number successfully`);
+          })
+          .catch(() => {
+            setErrMessage(`Information of ${changedPerson.name} has already been removed from server`)
+            setPersons(persons.filter((person) => person.name !== newName));
           });
       }
     }
@@ -78,10 +90,10 @@ const App = () => {
         .remove(id)
         .then(() => {
           setPersons(persons.filter((person) => person.id !== id));
-          setMessage(`Remove ${person.name} succesfully`);
+          setSuccMessage(`Remove ${person.name} succesfully`);
         })
         .catch(() => {
-          alert(`Unable to remove ${person.name}`);
+          setErrMessage(`Information of ${person.name} has already been removed from server`)
           setPersons(persons.filter((person) => person.id !== id));
         });
     }
@@ -90,6 +102,7 @@ const App = () => {
   const filterProps = {
     filter,
     successMessage,
+    errorMessage,
     handleFilterInputChange,
   };
 

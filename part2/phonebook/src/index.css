@@ -1,5 +1,12 @@
 .success {
   color: green;
+}
+
+.error {
+  color: red;
+}
+
+.notification {
   background: lightgrey;
   font-size: 20px;
   border-style: solid;
