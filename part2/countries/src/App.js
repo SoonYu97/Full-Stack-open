@@ -40,6 +40,10 @@ const App = () => {
 
   const handleFilterChange = (e) => setFilter(e.target.value);
 
+  const showCountry = (name) => {
+    setFilter(name);
+  }
+
   return (
     <div>
       <div>
@@ -49,7 +53,7 @@ const App = () => {
         {countries.length > 10 ? (
           "Too many matches, specify another filter"
         ) : countries.length > 1 ? (
-          <CountryList countries={countries} />
+          <CountryList countries={countries} showCountry={showCountry} />
         ) : countries.length > 0 ? (
           <Country country={countries[0]} />
         ) : (
