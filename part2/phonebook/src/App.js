@@ -30,7 +30,7 @@ const App = () => {
 
   const addPerson = (e) => {
     e.preventDefault();
-    if (!persons.find((e) => e.name === newName)) {
+    if (!persons.find((person) => person.name === newName)) {
       personServices
         .create({ name: newName, number: newNumber })
         .then((newPerson) => {
@@ -39,19 +39,41 @@ const App = () => {
           setNewNumber("");
         });
     } else {
-      alert(`${newName} is already added to phonebook`);
+      if (
+        window.confirm(
+          `${newName} is already added to phonebook, replace the old number with a new one?`
+        )
+      ) {
+        const changedPerson = persons.find((person) => person.name === newName);
+        personServices
+          .update({ ...changedPerson, number: newNumber })
+          .then((newPerson) => {
+            console.log(newPerson);
+            setPersons(
+              persons.map((person) =>
+                person.name === newName ? newPerson : person
+              )
+            );
+            setNewName("");
+            setNewNumber("");
+          });
+      }
     }
   };
 
   const deletePerson = (id) => {
-    console.log(id);
-    personServices
-      .remove(id)
-      .then(() => setPersons(persons.filter((person) => person.id !== id)))
-      .catch((error) => {
-        alert(`unable to remove `);
-        setPersons(persons.filter((person) => person.id !== id));
-      });
+    const person = persons.find((person) => person.id === id);
+    if (window.confirm(`Delete ${person.name}?`)) {
+      personServices
+        .remove(id)
+        .then(() => {
+          setPersons(persons.filter((person) => person.id !== id));
+        })
+        .catch(() => {
+          alert(`Unable to remove ${person.name}`);
+          setPersons(persons.filter((person) => person.id !== id));
+        });
+    }
   };
 
   const filterProps = {
