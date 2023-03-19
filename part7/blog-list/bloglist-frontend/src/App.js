@@ -9,8 +9,12 @@ import { setUser, removeUser } from './reducers/userReducer'
 import LoginForm from './components/LoginForm'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
+
 import blogService from './services/blogs'
-import Home from './components/Home'
+
+import Home from './pages/Home'
+import Users from './pages/Users'
+import User from './pages/User'
 
 const App = () => {
   const dispatch = useDispatch()
@@ -54,10 +58,9 @@ const App = () => {
           </p>
           <Routes>
             <Route path="/" element={<Home user={user} />} />
-            {/* <Route
-              path="/anecdote/:id"
-              element={<Anecdote anecdote={anecdote} />}
-            />
+            <Route path="/users" element={<Users />} />
+            <Route path="/users/:id" element={<User />} />
+            {/*
             <Route path="/create" element={<CreateNew addNew={addNew} />} />
             <Route path="/about" element={<About />} /> */}
           </Routes>
