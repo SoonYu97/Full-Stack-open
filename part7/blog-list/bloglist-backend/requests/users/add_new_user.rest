@@ -1,0 +1,41 @@
+POST http://localhost:3003/api/users HTTP/1.1
+content-type: application/json
+
+{
+    "username": "root",
+    "name": "Superuser",
+    "password": "salainen"
+}
+
+###
+
+POST http://localhost:3003/api/users HTTP/1.1
+content-type: application/json
+
+{
+    "username": "hellas",
+    "name": "Arto Hellas",
+    "password": "artohell@s"
+}
+
+###
+
+POST http://localhost:3003/api/users HTTP/1.1
+content-type: application/json
+
+{
+    "username": "mluukkai",
+    "name": "Matti Luukkainen",
+    "password": "QwErTyUiOp"
+}
+
+###
+
+POST http://localhost:3003/api/users HTTP/1.1
+content-type: application/json
+
+{
+    "username": "ml",
+    "name": "Matti Luukkainen",
+    "password": "Qwqwee"
+}

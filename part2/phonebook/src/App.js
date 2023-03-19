@@ -54,6 +54,9 @@ const App = () => {
           setNewName("");
           setNewNumber("");
           setSuccMessage(`Added ${newPerson.name} successfully`);
+        })
+        .catch((error) => {
+          setErrMessage(error.response.data.error);
         });
     } else {
       if (
@@ -76,7 +79,9 @@ const App = () => {
             setSuccMessage(`Updated ${newPerson.name}'s number successfully`);
           })
           .catch(() => {
-            setErrMessage(`Information of ${changedPerson.name} has already been removed from server`)
+            setErrMessage(
+              `Information of ${changedPerson.name} has already been removed from server`
+            );
             setPersons(persons.filter((person) => person.name !== newName));
           });
       }
@@ -93,7 +98,9 @@ const App = () => {
           setSuccMessage(`Remove ${person.name} succesfully`);
         })
         .catch(() => {
-          setErrMessage(`Information of ${person.name} has already been removed from server`)
+          setErrMessage(
+            `Information of ${person.name} has already been removed from server`
+          );
           setPersons(persons.filter((person) => person.id !== id));
         });
     }
