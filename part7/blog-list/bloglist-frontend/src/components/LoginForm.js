@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux'
 import { setNotification } from '../reducers/notificationReducer'
 import { setUser } from '../reducers/userReducer'
 
-import { useField } from '../hooks/UseField'
+import { useField } from '../hooks/index'
 
 import loginService from '../services/login'
 import blogService from '../services/blogs'
