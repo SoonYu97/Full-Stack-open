@@ -4,11 +4,15 @@
   "description": "",
   "main": "library-backend.js",
   "scripts": {
-    "start": "node library-backend.js"
+    "start": "node library-backend.js",
+    "dev": "nodemon library-backend.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@apollo/server": "^4.5.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.21"
   }
 }
