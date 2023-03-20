@@ -2,6 +2,10 @@ import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Routes, Route } from 'react-router-dom'
 
+import Box from '@mui/material/Box'
+import Container from '@mui/material/Container'
+import CssBaseline from '@mui/material/CssBaseline'
+import Typography from '@mui/material/Typography'
 
 import { initializeBlog } from './reducers/blogReducer'
 import { setUser } from './reducers/userReducer'
@@ -39,28 +43,46 @@ const App = () => {
   }, [])
 
   return (
-    <div>
+    <>
+      <CssBaseline />
       <Notification />
       {!user ? (
-        <Togglable buttonLabel="login">
-          <LoginForm />
-        </Togglable>
+        <Box
+          sx={{
+            mt: '200px',
+          }}
+        >
+          <Togglable buttonLabel="login">
+            <LoginForm />
+          </Togglable>
+        </Box>
       ) : (
         <>
           <Nav />
-          <h1 style={{ textTransform: 'uppercase' }}>blog app</h1>
-          <Routes>
-            <Route path="/" element={<Home user={user} />} />
-            <Route path="/users" element={<Users />} />
-            <Route path="/users/:id" element={<User />} />
-            <Route path="/blogs/:id" element={<Blog user={user} />} />
-            {/*
-            <Route path="/create" element={<CreateNew addNew={addNew} />} />
-            <Route path="/about" element={<About />} /> */}
-          </Routes>
+          <Container disableGutters component="main" maxWidth="sm" sx={{ pt: 8, pb: 6 }}>
+            <Typography
+              component="h1"
+              variant="h2"
+              sx={{
+                textTransform: 'uppercase',
+                mb: 2
+              }}
+            >
+              blog app
+            </Typography>
+            <Routes>
+              <Route path="/" element={<Home user={user} />} />
+              <Route path="/users" element={<Users />} />
+              <Route path="/users/:id" element={<User />} />
+              <Route path="/blogs/:id" element={<Blog user={user} />} />
+              {/*
+              <Route path="/create" element={<CreateNew addNew={addNew} />} />
+              <Route path="/about" element={<About />} /> */}
+            </Routes>
+          </Container>
         </>
       )}
-    </div>
+    </>
   )
 }
 

@@ -2,21 +2,23 @@ import { useState, useEffect } from 'react'
 import { useMatch } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 
-import { voteBlog, deleteBlog, addComment } from '../reducers/blogReducer'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import Divider from '@mui/material/Divider'
+import Link from '@mui/material/Link'
+import Typography from '@mui/material/Typography'
+
+import { voteBlog, deleteBlog } from '../reducers/blogReducer'
 import { setNotification } from '../reducers/notificationReducer'
 
-import { useField } from '../hooks'
-
 import blogService from '../services/blogs'
+import Comment from '../components/Comment'
 
 const Blog = ({ user }) => {
   const dispatch = useDispatch()
 
   const [blog, setBlog] = useState(null)
   const match = useMatch('/blogs/:id')
-
-  const comment = useField('text', 'comment-input')
-  const { reset: commentReset, ...commentInput } = comment
 
   useEffect(() => {
     async function getOneBlog() {
@@ -54,45 +56,33 @@ const Blog = ({ user }) => {
     return (<><h2>loading...</h2></>)
   }
 
-  const onAddComment = () => {
-    commentReset()
-    dispatch(addComment(blog.id, commentInput.value))
-  }
-
   return (
     <>
-      <h2>{blog.title}</h2>
-      <div>
-        <a href={blog.url}>{blog.url}</a>
-      </div>
-      <div>
+      <Typography component='h3' variant="h6" gutterBottom>
+        {blog.title} <Typography component='span' variant="caption" gutterBottom> by {blog.user.name}</Typography>
+      </Typography>
+      <Divider />
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'start',
+        }}
+      >
+        <Link underline='hover' href={blog.url}>{blog.url}</Link>
         {blog.likes} like{blog.likes > 1 && 's'}
-        <button name="like" id="like-button" onClick={updateLike}>
+        <Button name="like" id="like-button" onClick={updateLike}>
           like
-        </button>
-      </div>
-      <div>{blog.user.name}</div>
+        </Button>
+      </Box>
       {user.name === blog.user.name && (
         <div>
-          <button name="delete" id="delete-button" onClick={deleteB}>
+          <Button variant='outlined' name="delete" id="delete-button" onClick={deleteB}>
             delete
-          </button>
+          </Button>
         </div>
       )}
-      <div>
-        <h3>comments</h3>
-        <div>
-          <input {...commentInput} />
-          <button onClick={onAddComment}>add comment</button>
-        </div>
-        <ul>
-          {blog.comments && blog.comments.length > 0 && (
-            blog.comments.map((comment) => (
-              <li key={comment}>{comment}</li>
-            ))
-          )}
-        </ul>
-      </div>
+      <Comment blog={blog} />
     </>
   )
 }

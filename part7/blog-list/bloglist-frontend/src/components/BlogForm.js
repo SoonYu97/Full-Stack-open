@@ -1,11 +1,18 @@
 import { useDispatch } from 'react-redux'
 
+import Dialog from '@mui/material/Dialog'
+import DialogActions from '@mui/material/DialogActions'
+import DialogContent from '@mui/material/DialogContent'
+import DialogTitle from '@mui/material/DialogTitle'
+import Button from '@mui/material/Button'
+import TextField from '@mui/material/TextField'
+
 import { createBlog } from '../reducers/blogReducer'
 import { setNotification } from '../reducers/notificationReducer'
 
 import { useField } from '../hooks/index'
 
-const BlogForm = () => {
+const BlogForm = ({ open, setOpen }) => {
   const dispatch = useDispatch()
 
   const title = useField('text', 'title-input')
@@ -37,33 +44,48 @@ const BlogForm = () => {
       type: 'success',
       body: `a new blog ${titleInput.value} by ${authorInput.value} added`,
     }, 5))
+    setOpen(false)
   }
 
   return (
-    <div className='blogFormDiv'>
-      <h2>create a new blog</h2>
-      <form onSubmit={addBlog}>
-        <div>
-          <label>
-            title:
-            <input required {...titleInput}/>
-          </label>
-        </div>
-        <div>
-          <label>
-            author:
-            <input required {...authorInput}/>
-          </label>
-        </div>
-        <div>
-          <label>
-            url:
-            <input required {...urlInput}/>
-          </label>
-        </div>
-        <button id='blog-submit-button' type='submit'>create</button>
-      </form>
-    </div>
+    <Dialog open={open} onClose={() => setOpen(false)}>
+      <DialogTitle>Create a new blog</DialogTitle>
+      <DialogContent>
+        <TextField
+          required
+          fullWidth
+          margin='normal'
+          label='Title'
+          {...titleInput}
+        />
+        <TextField
+          required
+          fullWidth
+          margin='normal'
+          label='Author'
+          {...authorInput}
+        />
+        <TextField
+          required
+          fullWidth
+          margin='normal'
+          label='URL'
+          {...urlInput}
+        />
+      </DialogContent>
+      <DialogActions>
+        <Button
+          id='login-button'
+          type='submit'
+          fullWidth
+          variant='contained'
+          onClick={addBlog}
+          sx={{ mt: 3, mb: 2 }}
+        >
+          create
+        </Button>
+      </DialogActions>
+    </Dialog>
   )
 }
 
