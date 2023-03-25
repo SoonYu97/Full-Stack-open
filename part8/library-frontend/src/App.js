@@ -6,6 +6,7 @@ import Authors from "./components/Authors"
 import Books from "./components/Books"
 import NewBook from "./components/NewBook"
 import LoginForm from "./components/LoginForm.js"
+import Recommendations from "./components/Recommendation"
 
 const App = () => {
 	const [token, setToken] = useState(null)
@@ -33,6 +34,7 @@ const App = () => {
 				{token ? (
 					<>
 						<Link to="/add">add book</Link>
+						<Link to="/recommendation">recommend</Link>
 						<button onClick={() => logout()}>logout</button>
 					</>
 				) : (
@@ -47,6 +49,7 @@ const App = () => {
 				/>
 				<Route path="/books" element={<Books />} />
 				<Route path="/add" element={<NewBook setError={setError} />} />
+				<Route path="/recommendation" element={<Recommendations />} />
 				<Route
 					path="/login"
 					element={<LoginForm setToken={setToken} setError={setError} />}
