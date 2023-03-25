@@ -11,11 +11,11 @@ const Books = () => {
 	if (booksResult.loading || genresResult.loading) {
 		return <div>loading...</div>
 	}
+	console.log(booksResult)
 
 	return (
 		<div>
 			<h2>books</h2>
-
 			<table>
 				<tbody>
 					<tr>

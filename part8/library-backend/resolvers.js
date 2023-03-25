@@ -1,86 +1,16 @@
-const { ApolloServer } = require("@apollo/server")
-const { startStandaloneServer } = require("@apollo/server/standalone")
-const mongoose = require("mongoose")
 const { GraphQLError } = require("graphql")
 const jwt = require("jsonwebtoken")
-
+const { PubSub } = require("graphql-subscriptions")
+const pubsub = new PubSub()
 const config = require("./utils/config")
-
-mongoose.set("strictQuery", false)
-
 const Author = require("./models/author")
 const Book = require("./models/book")
 const User = require("./models/user")
 
-mongoose
-	.connect(config.MONGODB_URI)
-	.then(() => {
-		console.log("connected to MongoDB")
-	})
-	.catch((error) => {
-		console.log("error connection to MongoDB:", error.message)
-	})
-
-const typeDefs = `
-  type User {
-    username: String!
-    favoriteGenre: String!
-    id: ID!
-  }
-
-  type Token {
-    value: String!
-  }
-
-  type Query {
-    bookCount: Int!
-    authorCount: Int!
-		allGenres: [String!]!
-    allBooks(author: String, genre: String): [Book!]!
-    allAuthors: [Author!]!
-    me: User
-  }
-
-  type Mutation {
-    addBook(
-      title: String!
-      author: String!
-      published: Int!
-      genres: [String!]!
-    ): Book!
-    editAuthor(
-      name: String!
-      setBornTo: Int!
-    ): Author
-    createUser(
-      username: String!
-      favoriteGenre: String!
-    ): User
-    login(
-      username: String!
-      password: String!
-    ): Token
-  }
-
-  type Author {
-    name: String!
-    born: Int
-    bookCount: Int!
-    id: ID!
-  }
-
-  type Book {
-    title: String!
-    published: Int!
-    author: Author!
-    genres: [String!]!
-    id: ID!
-  }
-`
 const resolvers = {
 	Query: {
-		bookCount: () => Book.find({}).count(),
-		authorCount: () => Author.find({}).count(),
+		bookCount: () => Book.find({}).count().exec(),
+		authorCount: () => Author.find({}).count().exec(),
 		allGenres: () => {
 			return Book.distinct("genres").exec()
 		},
@@ -90,6 +20,7 @@ const resolvers = {
 					name: 1,
 					born: 1,
 					bookCount: 1,
+					books: 1,
 				})
 			if (!args.genre)
 				return Book.find({
@@ -98,33 +29,37 @@ const resolvers = {
 					name: 1,
 					born: 1,
 					bookCount: 1,
+					books: 1,
 				})
 			if (!args.author)
 				return Book.find({ genres: args.genre }).populate("author", {
 					name: 1,
 					born: 1,
 					bookCount: 1,
+					books: 1,
 				})
 			return Book.find({ genres: args.genre }).populate("author", {
 				name: 1,
 				born: 1,
 				bookCount: 1,
+				books: 1,
 			})
 		},
-		allAuthors: async () => Author.find({}),
-    me: (_, __, context) => {
-      return context.currentUser
-    }
+		allAuthors: async () =>
+			Author.find({}).populate("books", { title: 1, genres: 1, published: 1 }),
+		me: (_, __, context) => {
+			return context.currentUser
+		},
 	},
 	Mutation: {
 		addBook: async (_, args, context) => {
-      if (!context.currentUser) {
-        throw new GraphQLError("Saving book failed", {
+			if (!context.currentUser) {
+				throw new GraphQLError("Saving book failed", {
 					extensions: {
 						code: "UNAUTHORIZE",
 					},
 				})
-      }
+			}
 			const { author: authorName, ...bookArgs } = args
 			if (bookArgs.title.length < 5) {
 				throw new GraphQLError("Saving book failed", {
@@ -144,7 +79,7 @@ const resolvers = {
 			}
 			let author = await Author.findOne({ name: authorName })
 			if (!author) {
-				author = new Author({ name: authorName })
+				author = new Author({ name: authorName, books: [] })
 				try {
 					await author.save()
 				} catch (error) {
@@ -159,6 +94,8 @@ const resolvers = {
 			}
 			const book = new Book({ ...bookArgs, author })
 
+			await Author.updateOne({ name: authorName }, { $push: { books: book } })
+
 			try {
 				await book.save()
 			} catch (error) {
@@ -171,16 +108,17 @@ const resolvers = {
 				})
 			}
 
+			pubsub.publish("BOOK_ADDED", { bookAdded: book })
 			return book
 		},
 		editAuthor: async (root, args, context) => {
-      if (!context.currentUser) {
-        throw new GraphQLError("Editing author failed", {
+			if (!context.currentUser) {
+				throw new GraphQLError("Editing author failed", {
 					extensions: {
 						code: "UNAUTHORIZE",
 					},
 				})
-      }
+			}
 			const author = await Author.findOne({ name: args.name })
 			if (!author) {
 				return null
@@ -227,28 +165,13 @@ const resolvers = {
 		name: (root) => root.name,
 		born: (root) => root.born,
 		id: (root) => root.id,
-		bookCount: async (root) => Book.find({ "author.name": root.name }).count(),
+		bookCount: async (root) => root.books?.length || 0,
+	},
+	Subscription: {
+		bookAdded: {
+			subscribe: () => pubsub.asyncIterator("BOOK_ADDED"),
+		},
 	},
 }
 
-const server = new ApolloServer({
-	typeDefs,
-	resolvers,
-})
-
-startStandaloneServer(server, {
-	listen: { port: 4000 },
-  context: async ({ req, res }) => {
-    const auth = req ? req.headers.authorization : null
-    if (auth && auth.startsWith('Bearer ')) {
-      const decodedToken = jwt.verify(
-        auth.substring(7), config.JWT_SECRET
-      )
-      const currentUser = await User
-        .findById(decodedToken.id)
-      return { currentUser }
-    }
-  },
-}).then(({ url }) => {
-	console.log(`Server ready at ${url}`)
-})
+module.exports = resolvers
