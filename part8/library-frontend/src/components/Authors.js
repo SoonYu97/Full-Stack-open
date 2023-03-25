@@ -3,7 +3,7 @@ import { useQuery } from "@apollo/client"
 import { ALL_AUTHORS } from "../queries"
 import SetBirthYear from "./SetBirthYear"
 
-const Authors = () => {
+const Authors = ({ token, setError }) => {
 	const result = useQuery(ALL_AUTHORS)
 
 	if (result.loading) {
@@ -31,7 +31,7 @@ const Authors = () => {
 					))}
 				</tbody>
 			</table>
-      <SetBirthYear authors={authors} />
+			{token && <SetBirthYear authors={authors} setError={setError} />}
 		</div>
 	)
 }

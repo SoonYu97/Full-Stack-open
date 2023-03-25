@@ -3,23 +3,31 @@ import { useMutation } from "@apollo/client"
 
 import { UPDATE_BIRTHYEAR, ALL_AUTHORS } from "../queries"
 
-const SetBirthYear = ({ authors }) => {
+const SetBirthYear = ({ authors, setError }) => {
 	const [name, setName] = useState("")
 	const [born, setBorn] = useState("")
 
 	const [editAuthor] = useMutation(UPDATE_BIRTHYEAR, {
 		refetchQueries: [{ query: ALL_AUTHORS }],
+		onError: (error) => {
+			setError(error.graphQLErrors[0].message)
+			setTimeout(() => {
+				setError("")
+			}, 3000);
+		}
 	})
 
 	const submit = async (event) => {
 		event.preventDefault()
 
 		if (born === "") {
-			console.log("not given born year")
+			setError("Born year not given")
+			setTimeout(() => {
+				setError("")
+			}, 3000);
 			return
 		}
 
-		console.log("update birth year...")
 		editAuthor({
 			variables: { name, setBornTo: Number(born) },
 		})
