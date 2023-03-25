@@ -9,7 +9,6 @@ const Recommendations = () => {
 	if (booksResult.loading || meResult.loading) {
 		return <div>loading...</div>
 	}
-	console.log(meResult)
 
 	const { favoriteGenre } = meResult.data.me
 	return (
